@@ -1,0 +1,220 @@
+﻿@model IEnumerable<Parking.Repository.Models.ParkingArea>
+
+@{
+    ViewBag.Title = "My Parking System";
+}
+
+<div class="container">
+    <div style="margin-top:50px;" class="mainbox col-md-8">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="panel-title">My Parking System</div>
+            </div>
+
+            <div style="padding-top:30px" class="panel-body">
+
+                <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
+
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Kode Tiket</label>
+                        <div class="col-sm-10">
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Jenis</label>
+                        <div class="col-sm-10">
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Plat No</label>
+                        <div class="col-sm-10">
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Jam Masuk</label>
+                        <div class="col-sm-10">
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Jam Keluar</label>
+                        <div class="col-sm-10">
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Durasi</label>
+                        <div class="col-sm-10">
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Tarif Parkir</label>
+                        <div class="col-sm-10">
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:10px" class="form-group">
+                        <!-- Button -->
+
+                        <div class="col-sm-12 controls">
+                            <a id="btn-login" href="#" class="btn btn-success">Save  </a>
+                            <a id="btn-fblogin" href="#" class="btn btn-primary">Cancel</a>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 control">
+                            <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+
+    </div>
+    <div class="mainbox col-md-12">
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="panel-title">List Parking</div>
+            </div>
+
+            <div style="padding-top:30px" class="panel-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <td>Kode Tiket</td>
+                        <td>Jenis</td>
+                        <td>Plat No</td>
+                        <td>Jam Masuk</td>
+                        <td>Jam Keluar</td>
+                        <td>Durasi</td>
+                        <td>Tarif Parkir</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>7</td>
+                    </tr>
+                </table>
+
+                <div style="margin-top:10px" class="form-group">
+                    <!-- Button -->
+
+                    <div class="col-sm-12 controls">
+                        <a id="btn-login" href="#" class="btn btn-success">Print  </a>
+                        <a id="btn-fblogin" href="#" class="btn btn-primary">New</a>
+                        <a id="btn-fblogin" href="#" class="btn btn-primary">Update</a>
+                        <a id="btn-fblogin" href="#" class="btn btn-primary">Delete</a>
+
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.TicketCode)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TransportationTypeId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PlateNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CheckIn)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CheckOut)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Duration)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Amount)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TicketCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TransportationTypeId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlateNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckOut)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+
+</table>
