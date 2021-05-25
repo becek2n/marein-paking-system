@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using Parking.Repository.Models;
 using System.Linq.Dynamic;
 using Parking.UI.Extentions;
+using Parking.Interfaces;
 
 namespace Parking.UI.Controllers
 {
@@ -16,6 +17,10 @@ namespace Parking.UI.Controllers
     {
         private ParkingContext db = new ParkingContext();
 
+        private readonly IParking _parking;
+        public ParkingController(IParking parking) {
+            _parking = parking;
+        }
         // GET: Parking
         public ActionResult Index() {
             var transportations = db.Transportations.ToList();
@@ -28,36 +33,23 @@ namespace Parking.UI.Controllers
             var pageSize = param.Length;
 
             string search = this.Request.QueryString["search[value]"] ?? string.Empty;
-            var data = db.Parkings
-                .Where(x => x.Transportation.Name.ToLower().Contains(search))
-                .GetPage(pageIndex, pageSize);
 
+            var data = _parking.GetAll(pageIndex, pageSize, search);
 
             return Json(new
             {
                 param.Draw,
-                iTotalRecords = data.PageCount,
-                iTotalDisplayRecords = data.RowCount,
-                aaData = data.Results
+                iTotalRecords = data.ResponseData.RowCount,
+                iTotalDisplayRecords = data.ResponseData.PageCount,
+                aaData = data.ResponseData.Results
             }, JsonRequestBehavior.AllowGet);
 
         }
         
         public ActionResult GetCode() {
-            //get date first
-            var xxx = DateTime.Now.ToString("yyyyMMdd");
-            var data = db.Parkings
-                .Where(x => x.TicketCode.Substring(3, 8) == xxx)
-                .Select(x => x.TicketCode.Substring(11, 3))
-                .Cast<int?>()
-                .Max();
-
-            var maxCode = (data == null ? 1 : data + 1);
-            //set attribut
-            var transactionCode = "TRX" + DateTime.Now.ToString("yyyyMMdd") + maxCode?.ToString("000");
-
-
-            return Json(new { UniqueCode = transactionCode }, JsonRequestBehavior.AllowGet);
+            var data = _parking.GetCode();
+            
+            return Json(new { data }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Parking/Details/5

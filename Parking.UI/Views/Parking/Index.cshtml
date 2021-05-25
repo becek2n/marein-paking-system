@@ -325,7 +325,11 @@
                 url: '@Url.Action("GetCode", "Parking")',
                 cache: false,
                 success: function (response) {
-                    $("#ticketCode").val(response.UniqueCode);
+                    if (response.data.ResponseCode == "200") {
+                        $("#ticketCode").val(response.data.ResponseData);
+                    } else {
+                        alert(response.data.ResponseMessage);
+                    }
                 }
             });
         }

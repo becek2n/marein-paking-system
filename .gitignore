@@ -4,3 +4,7 @@
 /Parking.UI/bin
 /Parking.UI/Content/DataTables
 /Parking.UI/Scripts/DataTables
+/Parking.DAL/bin
+/Parking.DAL/obj
+/Parking.Helper/obj
+/Parking.Helper/bin
