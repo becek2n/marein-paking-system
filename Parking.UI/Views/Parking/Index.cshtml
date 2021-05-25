@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Parking.Repository.Models.ParkingArea>
+﻿@model List<Parking.Repository.Models.Transportation>
 
 @{
     ViewBag.Title = "My Parking System";
@@ -15,73 +15,82 @@
 
                 <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
 
-                <form class="form-horizontal" role="form">
+                <form class="form-horizontal" role="form" id="formTicket" name="formTicket">
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Kode Tiket</label>
+                        <label for="inputTicketCode" class="col-sm-2 col-form-label">Kode Tiket</label>
                         <div class="col-sm-10">
                             <div style="margin-bottom: 25px" class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                                <input id="ticketCode" type="text" readonly class="form-control" name="ticketCode" value="" placeholder="Kode Tiket">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Jenis</label>
+                        <label for="inputTransportation" class="col-sm-2 col-form-label">Jenis</label>
                         <div class="col-sm-10">
                             <div style="margin-bottom: 25px" class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                                <select id="transportationId" name="transportationId" class="form-control" required>
+                                    @foreach (var transportation in Model)
+                                    {
+                                        <option value="@transportation.Id">@transportation.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPlateNumber" class="col-sm-2 col-form-label">Plat No</label>
+                        <div class="form-row ">
+                            <div class="col-sm-2 ">
+                                <input type="text" class="form-control" id="plateNumberFirst" name="plateNumberFirst" maxlength="3" placeholder="AAA" required>
+                            </div>
+                            <div class="col-sm-3 " style="margin-left:-25px">
+                                <input class="form-control" id="plateNumberMiddle" name="plateNumberMiddle" maxlength="5" inputmode="numeric" type="number" placeholder="99999" required>
+                            </div>
+                            <div class="col-sm-2" style="margin-left:-25px">
+                                <input type="text" class="form-control" id="plateNumberLast" name="plateNumberLast" maxlength="3" placeholder="XXX" required>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Plat No</label>
+                        <label for="inputCheckin" class="col-sm-2 col-form-label">Jam Masuk</label>
                         <div class="col-sm-10">
                             <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                <input id="checkIn" type="text" class="form-control datepicker" name="checkIn" value="" placeholder="Jam masuk" required>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Jam Masuk</label>
+                        <label for="inputCheckOut" class="col-sm-2 col-form-label">Jam Keluar</label>
                         <div class="col-sm-10">
                             <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                <input id="checkOut" type="text" class="form-control datepicker" name="checkOut" value="" placeholder="Jam keluar">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Jam Keluar</label>
+                        <label for="inputDuration" class="col-sm-2 col-form-label">Durasi</label>
                         <div class="col-sm-10">
                             <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                <input id="duration" type="text" class="form-control timepicker" name="duration" value="" placeholder="Durasi" readonly>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Durasi</label>
+                        <label for="inputAmount" class="col-sm-2 col-form-label">Tarif Parkir</label>
                         <div class="col-sm-10">
                             <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Tarif Parkir</label>
-                        <div class="col-sm-10">
-                            <div style="margin-bottom: 25px" class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
+                                <span class="input-group-addon">Rp</span>
+                                <input id="amount" type="text" class="form-control" readonly name="amount" value="" placeholder="Tarif">
                             </div>
                         </div>
                     </div>
@@ -90,8 +99,8 @@
                         <!-- Button -->
 
                         <div class="col-sm-12 controls">
-                            <a id="btn-login" href="#" class="btn btn-success">Save  </a>
-                            <a id="btn-fblogin" href="#" class="btn btn-primary">Cancel</a>
+                            <input type="submit" id="save" name="save" class="btn btn-success" value="Save" />
+                            <input type="button" id="cancel" name="cancel" class="btn btn-success" value="Cancel" />
 
                         </div>
                     </div>
@@ -117,104 +126,212 @@
             </div>
 
             <div style="padding-top:30px" class="panel-body">
-                <table class="table table-bordered">
-                    <tr>
-                        <td>Kode Tiket</td>
-                        <td>Jenis</td>
-                        <td>Plat No</td>
-                        <td>Jam Masuk</td>
-                        <td>Jam Keluar</td>
-                        <td>Durasi</td>
-                        <td>Tarif Parkir</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                    </tr>
-                </table>
-
                 <div style="margin-top:10px" class="form-group">
-                    <!-- Button -->
-
                     <div class="col-sm-12 controls">
                         <a id="btn-login" href="#" class="btn btn-success">Print  </a>
-                        <a id="btn-fblogin" href="#" class="btn btn-primary">New</a>
-                        <a id="btn-fblogin" href="#" class="btn btn-primary">Update</a>
-                        <a id="btn-fblogin" href="#" class="btn btn-primary">Delete</a>
-
+                        <button name="New" id="New" class="btn btn-primary"> New</button>
+                        <input type="button" name="Update" id="Update" class="btn btn-primary" value="Update">
+                        <input type="button" name="Delete" id="Delete" class="btn btn-primary" value="Delete">
                     </div>
                 </div>
+                <br />
+                <br />
+                <table id="datatables" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Tiket</th>
+                            <th>Jenis</th>
+                            <th>Plat No</th>
+                            <th>Jam Masuk</th>
+                            <th>Jam Keluar</th>
+                            <th>Durasi</th>
+                            <th>Tarif Parkir</th>
+                        </tr>
+
+                    </thead>
+
+                </table>
+
+
             </div>
 
-            
+
         </div>
     </div>
 </div>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.TicketCode)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.TransportationTypeId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PlateNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CheckIn)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CheckOut)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Duration)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Amount)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TicketCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TransportationTypeId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PlateNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CheckIn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CheckOut)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Duration)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-        </tr>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.21/dataRender/datetime.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<style>
+    #formTicket label.error {
+        margin-left: 10px;
+        width: auto;
+        display: inline;
+        color:red;
     }
+</style>
+<script type="text/javascript">
 
-</table>
+    $(document).ready(function () {
+        $('.datepicker').datetimepicker({
+            format: 'DD-MM-YYYY HH:mm:ss'
+        });
+
+        $('.timepicker').datetimepicker({
+            format: 'HH:mm:ss'
+        });
+
+        SetAttribute('disabled');
+
+        $('#datatables').DataTable({
+            "bServerSide": true,
+            "bProcessing": true,
+            "bSearchable": true,
+            ajax: '@Url.Action("GetAll", "Parking")',
+            columns: [
+                {
+                    "data": "id",
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    },
+                    "orderable": false
+                },
+                { data: 'TicketCode', name: 'TicketCode' },
+                { data: 'Transportation.Name', name: 'Transportation' },
+                {
+                    data: 'PlateNumber',
+                    render: function (data, type, row, meta) {
+                        return row.PlateNumberFirst + " " + row.PlateNumberMiddle + " " + row.PlateNumberLast;
+                    },
+                },
+                {
+                    data: 'CheckIn',
+                    render: function (data, type, row, meta) {
+                        return parseJsonDate(row.CheckIn);
+                    },
+                },
+                {
+                    data: 'CheckOut',
+                    render: function (data, type, row, meta) {
+                        return parseJsonDate(row.CheckOut);
+                    },
+                },
+                {
+                    data: 'Duration',
+                    render: function (data, type, row, meta) {
+                        var duration = row.Duration;
+                        var days = duration.Days;
+                        var hours = duration.Hours;
+                        var minutes = duration.Minutes;
+                        var seconds = duration.Seconds;
+                        return hours + ":" + minutes + ":" + seconds;
+                    },
+                },
+                {
+                    data: 'Amount',
+                    render: $.fn.dataTable.render.number(',', '.', 2)
+                },
+
+            ],
+
+        });
+
+        function parseJsonDate(jsonDate) {
+
+            var fullDate = new Date(parseInt(jsonDate.substr(6)));
+
+            let m = moment(fullDate);
+            let dateFormat = m.format('DD-MM-yyyy hh:mm:ss');
+            return dateFormat;
+        };
+
+        $("#formTicket").validate({
+            rules: {
+                ticketCode: {
+                    required: true,
+                },
+                transportationId: {
+                    required: true,
+                },
+                plateNoFirst: {
+                    required: true,
+                    minlength: 1
+                },
+            },
+            messages: {
+                first: {
+                    required: "Please enter first",
+                },
+                middle: {
+                    required: "Please enter middle",
+                },
+                image: {
+                    required: "Please Select logo",
+                },
+            },
+            submitHandler: function (form) {
+                var formData = new FormData($("#image")[0]);
+                $(form).ajaxSubmit({
+                    url: "action.php",
+                    type: "post",
+                    success: function (data, status) {
+                        alert(data);
+                    }
+                });
+            }
+        });
+
+        $("#New").click(function (e) {
+            GetCode();
+            SetAttribute('enabled');
+        });
+
+        function SetAttribute(oValue) {
+            switch (oValue) {
+                case 'enabled':
+                    $("#transportationId").prop("disabled", false);
+                    $("#plateNumberFirst").prop("readonly", false);
+                    $("#plateNumberMiddle").prop("readonly", false);
+                    $("#plateNumberLast").prop("readonly", false);
+                    $("#checkIn").prop("readonly", false);
+                    $("#checkOut").prop("readonly", false);
+                    $("#save").prop("disabled", false);
+                    $("#cancel").prop("disabled", false);
+                    break;
+
+                default:
+                    $("#transportationId").prop("disabled", true);
+                    $("#plateNumberFirst").prop("readonly", true);
+                    $("#plateNumberMiddle").prop("readonly", true);
+                    $("#plateNumberLast").prop("readonly", true);
+                    $("#checkIn").prop("readonly", true);
+                    $("#checkOut").prop("readonly", true);
+                    $("#save").prop("disabled", true);
+                    $("#cancel").prop("disabled", true);
+                    break;
+            }
+            
+            
+        }
+
+        function GetCode() {
+            $.ajax({
+                url: '@Url.Action("GetCode", "Parking")',
+                cache: false,
+                success: function (response) {
+                    $("#ticketCode").val(response.UniqueCode);
+                }
+            });
+        }
+
+    });
+
+
+
+</script>
