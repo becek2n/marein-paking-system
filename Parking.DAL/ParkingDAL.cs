@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Entity.Validation;
+
 namespace Parking.DAL
 {
     public class ParkingDAL : IParking
@@ -23,15 +25,22 @@ namespace Parking.DAL
             _mapper = mapper;
         }
 
-        public ResultModel<object> Add(ParkingDTO parkingDTO)
+        public ResultModel<object> Add(ParkingRequestDTO parkingDTO)
         {
             ResultModel<object> result = new ResultModel<object>();
             try
             {
+                //validate
+                if (parkingDTO.CheckOut != null) {
+                    if (parkingDTO.CheckOut < parkingDTO.CheckIn) {
+                        throw new Exception("Check Out not less than Check In!");
+                    }
+                }
+
                 using (var transaction = _context.Database.BeginTransaction()) {
                     try
                     {
-                        var model = _mapper.Map<ParkingDTO, ParkingArea>(parkingDTO);
+                        var model = _mapper.Map<ParkingRequestDTO, ParkingArea>(parkingDTO);
 
                         _context.Entry(model).State = System.Data.Entity.EntityState.Added;
                         _context.SaveChanges();
@@ -39,12 +48,26 @@ namespace Parking.DAL
                         transaction.Commit();
                         result.SetSuccess("success");
                     }
+                    catch (DbEntityValidationException dbEx)
+                    {
+                        List<string> errors = new List<string>();
+                        foreach (DbEntityValidationResult entityErr in dbEx.EntityValidationErrors)
+                        {
+                            foreach (DbValidationError error in entityErr.ValidationErrors)
+                            {
+                                errors.Add(string.Format("Error Message: {0}", error.ErrorMessage));
+                            }
+                        }
+
+                        result.SetFailed(String.Join(", ", errors.ToArray()));
+                    }
                     catch (Exception ex)
                     {
                         result.SetFailed(ex.Message);
                         Logging.WriteErr(ex);
                         transaction.Rollback();
                     }
+                    
                 }
 
             }
@@ -92,7 +115,7 @@ namespace Parking.DAL
             return result;
         }
 
-        public ResultModel<object> Edit(int id, ParkingDTO parkingDTO)
+        public ResultModel<object> Edit(int id, ParkingRequestDTO parkingDTO)
         {
             ResultModel<object> result = new ResultModel<object>();
             try

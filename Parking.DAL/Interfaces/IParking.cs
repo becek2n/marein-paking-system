@@ -10,8 +10,8 @@ namespace Parking.Interfaces
 {
     public interface IParking
     {
-        ResultModel<object> Add(ParkingDTO parkingDTO);
-        ResultModel<object> Edit(int id, ParkingDTO parkingDTO);
+        ResultModel<object> Add(ParkingRequestDTO parkingDTO);
+        ResultModel<object> Edit(int id, ParkingRequestDTO parkingDTO);
         ResultModel<object> Delete(int id);
         ResultModel<PagedResult<ParkingDTO>> GetAll(int pageIndex = 1, int pageSize = 10, string search = "");
         ResultModel<ParkingDTO> GetId(int id);

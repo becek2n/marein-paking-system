@@ -15,6 +15,7 @@ namespace Parking.DAL
         {
             CreateMap<ParkingArea, ParkingDTO>();
             CreateMap<ParkingDTO, ParkingArea>();
+            CreateMap<ParkingRequestDTO, ParkingArea>();
             CreateMap<Transportation, TransportationDTO>();
         }
     }

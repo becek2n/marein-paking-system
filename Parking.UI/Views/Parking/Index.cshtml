@@ -17,7 +17,7 @@
 
                 <form class="form-horizontal" role="form" id="formTicket" name="formTicket" method="post">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" id="hiddenID" name="hiddenID" />
+                    <input type="hidden" id="Id" name="Id" />
                     <div class="form-group">
                         <label for="inputTicketCode" class="col-sm-2 col-form-label">Kode Tiket</label>
                         <div class="col-sm-10">
@@ -132,8 +132,7 @@
                     <div class="col-sm-12 controls">
                         <a id="btn-login" href="#" class="btn btn-success">Print  </a>
                         <button name="New" id="New" class="btn btn-primary"> New</button>
-                        <input type="button" name="Update" id="Update" class="btn btn-primary" value="Update">
-                        <input type="button" name="Delete" id="Delete" class="btn btn-primary" value="Delete">
+                        <input type="button" name="Delete" id="Delete" class="btn btn-primary" value="Delete" onclick="Delete()">
                     </div>
                 </div>
                 <br />
@@ -212,14 +211,15 @@
                 } else {
                     fee = 3000;
                 }
-
-                $("#duration").val(hours);
+                var duration = secondsToHMS((endDate - dateStart) / 1000);
+                console.log(duration);
+                $("#duration").val(duration);
                 $("#amount").val(hours * fee);
             } else {
                 $("#duration").val("");
                 $("#amount").val("");
             }
-            
+
         } catch (e) {
             $("#duration").val("");
             $("#amount").val("");
@@ -311,12 +311,7 @@
                     data: 'Duration',
                     render: function (data, type, row, meta) {
                         if (row.Duration == null) { return '-'; }
-                        var duration = row.Duration;
-                        var days = duration.Days;
-                        var hours = duration.Hours;
-                        var minutes = duration.Minutes;
-                        var seconds = duration.Seconds;
-                        return hours + ":" + minutes + ":" + seconds;
+                        return row.Duration;
                     },
                     "orderable": false
                 },
@@ -373,16 +368,38 @@
             },
             submitHandler: function (form) {
                 var dataForm = $('#formTicket').serialize();
-                $.ajax({
-                    url: '@Url.Action("Create", "Parking")',
-                    type: "POST",
-                    data: dataForm,
-                    success: function (response) {
-                        alert(response.ResponseMessage);
-                        $('#datatables').DataTable().ajax.reload();
-                        SetAttribute("disabled");
-                    }
-                });
+
+                var id = $("#Id").val();
+                if (id == "") {
+                    $.ajax({
+                        url: '@Url.Action("Create", "Parking")',
+                        type: "POST",
+                        data: dataForm,
+                        success: function (response) {
+                            if (response.ResponseCode == "200") {
+                                $('#datatables').DataTable().ajax.reload();
+                                SetAttribute("disabled");
+                                alert("Data successfully save!");
+                            } else {
+                                alert(response.ResponseMessage);
+                            }
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: '@Url.Action("Edit", "Parking")',
+                        type: "POST",
+                        data: dataForm,
+                        success: function (response) {
+                            if (response.ResponseCode == "200") {
+                                $('#datatables').DataTable().ajax.reload();
+                                SetAttribute("disabled");
+                                alert("Data successfully udpate!");
+                            }
+                        }
+                    });
+                }
+
             }
         });
 
@@ -399,10 +416,10 @@
                 url: '@Url.Action("GetCode", "Parking")',
                 cache: false,
                 success: function (response) {
-                    if (response.data.ResponseCode == "200") {
-                        $("#ticketCode").val(response.data.ResponseData);
+                    if (response.ResponseCode == "200") {
+                        $("#ticketCode").val(response.ResponseData);
                     } else {
-                        alert(response.data.ResponseMessage);
+                        alert(response.ResponseMessage);
                     }
                 }
             });
@@ -424,7 +441,7 @@
                 $("#cancel").prop("disabled", false);
                 break;
             default:
-                $("#hiddenId").val("");
+                $("#Id").val("");
                 $("#ticketCode").val("");
                 $("#plateNumberFirst").val("");
                 $("#plateNumberMiddle").val("");
@@ -445,46 +462,98 @@
         }
     }
 
-    function parseJsonDate(jsonDate) {
-        var dt = parseFloat(jsonDate.replace(/[^0-9]/g, ""));
-        var fullDate = new Date(dt);
-        let dateFormat = moment(fullDate).format("YYYY-MM-DD HH:mm:ss");
-        return dateFormat;
+    function parseJsonDate(strDate) {
+        return moment(new Date(strDate)).format("YYYY-MM-DD HH:mm:ss");
     };
 
     function Edit(_id) {
-        $.ajax({
-            url: '@Url.Action("Details", "Parking")',
-            data: { id: _id },
-            cache: false,
-            success: function (response) {
-                if (response.ResponseCode == "200") {
-                    SetAttribute('enabled');
-                    //bind data
-                    $("#hiddenID").val(response.ResponseData.Id);
-                    $("#ticketCode").val(response.ResponseData.TicketCode);
-                    $("#transportationId").val(response.ResponseData.TransportationId);
-                    $("#plateNumberFirst").val(response.ResponseData.PlateNumberFirst);
-                    $("#plateNumberMiddle").val(response.ResponseData.PlateNumberMiddle);
-                    $("#plateNumberLast").val(response.ResponseData.PlateNumberLast);
-                    if (response.ResponseData.CheckIn != null) {
-                        $("#checkIn").val(parseJsonDate(response.ResponseData.CheckIn));
-                    }
-                    if (response.ResponseData.CheckOut != null) {
-                        $("#checkOut").val(parseJsonDate(response.ResponseData.CheckOut));
-                    }
-                    $("#duration").val(response.ResponseData.Duration);
-                    $("#amount").val(response.ResponseData.Amount);
+        try {
+            SetAttribute('disabled');
+            $.ajax({
+                url: '@Url.Action("Details", "Parking")',
+                data: { id: _id },
+                cache: false,
+                success: function (response) {
+                    if (response.ResponseCode == "200" && response.ResponseData !== null) {
+                        SetAttribute('enabled');
+                        //bind data
+                        $("#Id").val(response.ResponseData.Id);
+                        $("#ticketCode").val(response.ResponseData.TicketCode);
+                        $("#transportationId").val(response.ResponseData.TransportationId);
+                        $("#plateNumberFirst").val(response.ResponseData.PlateNumberFirst);
+                        $("#plateNumberMiddle").val(response.ResponseData.PlateNumberMiddle);
+                        $("#plateNumberLast").val(response.ResponseData.PlateNumberLast);
+                        if (response.ResponseData.CheckIn != null) {
+                            $("#checkIn").val(parseJsonDate(response.ResponseData.CheckIn));
+                        }
+                        if (response.ResponseData.CheckOut != null) {
+                            $("#checkOut").val(parseJsonDate(response.ResponseData.CheckOut));
+                        }
+                        $("#duration").val(response.ResponseData.Duration);
+                        $("#amount").val(response.ResponseData.Amount);
 
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
 
-                } else {
-                    alert(response.data.ResponseMessage);
+                    } else {
+                        alert(response.data.ResponseMessage);
+                    }
                 }
-            }
-        });
+            });
+        } catch (e) {
+            alert(e);
+        }
     }
 
+    function Delete() {
+        try {
+            var selected = new Array();
+            $('#datatables input[type="checkbox"]:checked').each(function () {
+                selected.push($(this).attr('id'));
+            });
+            var deleted = 0;
+            if (selected.length === 0) {
+                alert('No data selected!');
+            }
+            else {
+
+                $('#datatables input[type="checkbox"]:checked').each(function () {
+                    var _id = ($(this).attr('value'));
+
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Parking")',
+                        dataType: "json",
+                        type: "POST",
+                        data: { id: _id },
+                        cache: false,
+                        async: false,
+                        success: function (response) {
+                            if (response.ResponseCode == "200") {
+                                deleted++;
+                            } else {
+                                alert(response.data.ResponseMessage);
+                            }
+                        }
+                    });
+                });
+                if (deleted > 0) {
+                    alert("Data successfully deleted!")
+                    $('#datatables').DataTable().ajax.reload();
+                }
+            }
+
+            
+            
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+    function secondsToHMS(secs) {
+        function z(n) { return (n < 10 ? '0' : '') + n; }
+        var sign = secs < 0 ? '-' : '';
+        secs = Math.abs(secs);
+        return sign + z(secs / 3600 | 0) + ':' + z((secs % 3600) / 60 | 0) + ':' + z(secs % 60);
+    }
 
 
 </script>

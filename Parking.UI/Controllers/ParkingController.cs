@@ -10,6 +10,7 @@ using Parking.Repository.Models;
 using System.Linq.Dynamic;
 using Parking.Interfaces;
 using Parking.DTO;
+using Newtonsoft.Json;
 
 namespace Parking.UI.Controllers
 {
@@ -17,7 +18,6 @@ namespace Parking.UI.Controllers
     {
         private readonly IParking _parking;
         private readonly ITransportation _transportation;
-        private readonly ParkingContext db = new ParkingContext();
         public ParkingController(IParking parking, ITransportation transportation) {
             _parking = parking;
             _transportation = transportation;
@@ -37,20 +37,31 @@ namespace Parking.UI.Controllers
 
             var data = _parking.GetAll(pageIndex, pageSize, search);
 
-            return Json(new
-            {
-                param.Draw,
-                iTotalRecords = data.ResponseData.RowCount,
-                iTotalDisplayRecords = data.ResponseData.RowCount,
-                aaData = data.ResponseData.Results
-            }, JsonRequestBehavior.AllowGet);
+            return new JsonNetResult() { 
+                Data = new {
+                    param.Draw,
+                    iTotalRecords = data.ResponseData.RowCount,
+                    iTotalDisplayRecords = data.ResponseData.RowCount,
+                    aaData = data.ResponseData.Results
+                } 
+            };
+
+            //return Json(new
+            //{
+            //    param.Draw,
+            //    iTotalRecords = data.ResponseData.RowCount,
+            //    iTotalDisplayRecords = data.ResponseData.RowCount,
+            //    aaData = data.ResponseData.Results
+            //}, JsonRequestBehavior.AllowGet);
 
         }
         
         public ActionResult GetCode() {
             var data = _parking.GetCode();
-            
-            return Json(new { data }, JsonRequestBehavior.AllowGet);
+
+            //return Json(new { data }, JsonRequestBehavior.AllowGet);
+            return new JsonNetResult() { Data = data };
+
         }
 
         // GET: Parking/Details/5
@@ -58,12 +69,8 @@ namespace Parking.UI.Controllers
         {
             var data = _parking.GetId(id);
 
-            if (data.ResponseData == null)
-            {
-                return HttpNotFound();
-            }
-
-            return Json(data, JsonRequestBehavior.AllowGet);
+            //return Json(data, JsonRequestBehavior.AllowGet);
+            return new JsonNetResult() { Data = data };
         }
 
         // POST: Parking/Create
@@ -71,7 +78,7 @@ namespace Parking.UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ParkingDTO parkingDTO)
+        public ActionResult Create(ParkingRequestDTO parkingDTO)
         {
             if (parkingDTO == null)
             {
@@ -83,76 +90,60 @@ namespace Parking.UI.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: Parking/Edit/5
-        public ActionResult Edit(int id)
-        {
-            if (string.IsNullOrWhiteSpace(id.ToString()))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var data = _parking.GetId(id);
-
-            if (data.ResponseData == null)
-            {
-                return HttpNotFound();
-            }
-            return Json(data, JsonRequestBehavior.AllowGet);
-        }
-
         // POST: Parking/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, ParkingDTO parkingDTO)
+        public ActionResult Edit(int id, ParkingRequestDTO parkingDTO)
         {
-            if (string.IsNullOrWhiteSpace(id.ToString())) { 
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (string.IsNullOrWhiteSpace(id.ToString()) || parkingDTO == null) {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Bad Request", JsonRequestBehavior.AllowGet);
             }
-            if (ModelState.IsValid)
+            if (parkingDTO != null)
             {
                 var result = _parking.Edit(id, parkingDTO);
-                return RedirectToAction("Index");
+                return Json(result, JsonRequestBehavior.AllowGet);
             }
             return View();
         }
 
-        // GET: Parking/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            ParkingArea parkingArea = db.Parkings.Find(id);
-            if (parkingArea == null)
-            {
-                return HttpNotFound();
-            }
-            return View(parkingArea);
-        }
-
         // POST: Parking/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
-            if (string.IsNullOrWhiteSpace(id.ToString())) { 
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (string.IsNullOrWhiteSpace(id.ToString())) {
+                Response.StatusCode = 400;
+                return Json("Bad Request", JsonRequestBehavior.AllowGet);
             }
             var result = _parking.Delete(id);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        protected override void Dispose(bool disposing)
+    }
+
+    public class JsonNetResult : JsonResult
+    {
+        public object Data { get; set; }
+
+        public JsonNetResult()
         {
-            if (disposing)
+        }
+        public override void ExecuteResult(ControllerContext context)
+        {
+            HttpResponseBase response = context.HttpContext.Response;
+            response.ContentType = "application/json";
+            if (ContentEncoding != null)
+                response.ContentEncoding = ContentEncoding;
+            if (Data != null)
             {
-                db.Dispose();
+                JsonTextWriter writer = new JsonTextWriter(response.Output) { Formatting = Formatting.Indented };
+                JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings());
+                serializer.Serialize(writer, Data);
+                writer.Flush();
             }
-            base.Dispose(disposing);
         }
     }
 
-    
 }
