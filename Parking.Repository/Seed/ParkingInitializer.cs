@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Parking.Repository.Seed
 {
-    public class ParkingInitializer : System.Data.Entity.DropCreateDatabaseAlways<ParkingContext>
+    public class ParkingInitializer : System.Data.Entity.CreateDatabaseIfNotExists<ParkingContext>
     {
         protected override void Seed(ParkingContext context)
         {

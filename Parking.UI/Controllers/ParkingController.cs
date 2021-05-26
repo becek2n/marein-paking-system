@@ -73,13 +73,14 @@ namespace Parking.UI.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(ParkingDTO parkingDTO)
         {
-            if (ModelState.IsValid)
+            if (parkingDTO == null)
             {
-                var result = _parking.Add(parkingDTO);
-                //return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return Json(JsonRequestBehavior.AllowGet);
+            var result = _parking.Add(parkingDTO);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Parking/Edit/5

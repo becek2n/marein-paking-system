@@ -17,7 +17,7 @@
 
                 <form class="form-horizontal" role="form" id="formTicket" name="formTicket" method="post">
                     @Html.AntiForgeryToken()
-
+                    <input type="hidden" id="hiddenID" name="hiddenID" />
                     <div class="form-group">
                         <label for="inputTicketCode" class="col-sm-2 col-form-label">Kode Tiket</label>
                         <div class="col-sm-10">
@@ -102,7 +102,7 @@
 
                         <div class="col-sm-12 controls">
                             <input type="submit" id="save" name="save" class="btn btn-success" value="Save" />
-                            <input type="button" id="cancel" name="cancel" class="btn btn-success" value="Cancel" />
+                            <input type="button" id="cancel" name="cancel" class="btn btn-success" value="Cancel" onclick="SetAttribute('disabled')" />
 
                         </div>
                     </div>
@@ -150,6 +150,7 @@
                             <th>Jam Keluar</th>
                             <th>Durasi</th>
                             <th>Tarif Parkir</th>
+                            <th>Edit</th>
                         </tr>
 
                     </thead>
@@ -195,10 +196,59 @@
         "Invalid date"
     );
 
+    function Calculate(end) {
+        try {
+            var endDateValue = $("#checkOut").val();
+
+            if (Date.parse(endDateValue)) {
+                var dateStart = new Date($("#checkIn").val());
+                var endDate = new Date(endDateValue);
+                var hours = Math.round(Math.abs(dateStart - endDate) / 36e5);
+                var type = $("#transportationId option:selected").text();;
+                var fee = 0;
+
+                if (type == "Motor") {
+                    fee = 2000;
+                } else {
+                    fee = 3000;
+                }
+
+                $("#duration").val(hours);
+                $("#amount").val(hours * fee);
+            } else {
+                $("#duration").val("");
+                $("#amount").val("");
+            }
+            
+        } catch (e) {
+            $("#duration").val("");
+            $("#amount").val("");
+            alert(e);
+        }
+    }
+
     $(document).ready(function () {
-        $('.datepicker').datetimepicker({
-            format: 'DD-MM-YYYY HH:mm:ss'
+
+        $("#transportationId").change(function () {
+            Calculate('');
+        })
+        $('#checkIn').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss'
         });
+
+        $('#checkOut').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss',
+
+        }).on('dp.change', function (event) {
+            if (event.date) {
+                Calculate(event);
+            } else {
+                $("#duration").val("");
+                $("#amount").val("");
+            }
+
+        });
+
 
         $('.timepicker').datetimepicker({
             format: 'HH:mm:ss'
@@ -252,6 +302,7 @@
                 {
                     data: 'CheckOut',
                     render: function (data, type, row, meta) {
+                        if (row.CheckOut == null) { return '-'; }
                         return parseJsonDate(row.CheckOut);
                     },
                     "orderable": false
@@ -259,6 +310,7 @@
                 {
                     data: 'Duration',
                     render: function (data, type, row, meta) {
+                        if (row.Duration == null) { return '-'; }
                         var duration = row.Duration;
                         var days = duration.Days;
                         var hours = duration.Hours;
@@ -273,19 +325,19 @@
                     render: $.fn.dataTable.render.number(',', '.', 2),
                     "orderable": false
                 },
+                {
+                    data: 'Amount',
+                    render: function (data, type, row, meta) {
+                        return '<input type="button" value="Edit" class="btn btn-warning" onclick="Edit(' + row.Id + ')"/>';
+                    },
+                    "orderable": false
+                },
 
             ],
 
         });
 
-        function parseJsonDate(jsonDate) {
 
-            var fullDate = new Date(parseInt(jsonDate.substr(6)));
-
-            let m = moment(fullDate);
-            let dateFormat = m.format('DD-MM-yyyy hh:mm:ss');
-            return dateFormat;
-        };
 
         $("#formTicket").validate({
             rules: {
@@ -325,8 +377,10 @@
                     url: '@Url.Action("Create", "Parking")',
                     type: "POST",
                     data: dataForm,
-                    success: function (data, status) {
-                        alert(data);
+                    success: function (response) {
+                        alert(response.ResponseMessage);
+                        $('#datatables').DataTable().ajax.reload();
+                        SetAttribute("disabled");
                     }
                 });
             }
@@ -335,34 +389,10 @@
         $("#New").click(function (e) {
             GetCode();
             SetAttribute('enabled');
-            $("#checkIn").val(moment(new Date()).format("DD-MM-YYYY HH:mm:ss"));
+            $("#checkIn").val(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+            $("#plateNumberFirst").focus();
         });
 
-        function SetAttribute(oValue) {
-            switch (oValue) {
-                case 'enabled':
-                    $("#transportationId").prop("disabled", false);
-                    $("#plateNumberFirst").prop("readonly", false);
-                    $("#plateNumberMiddle").prop("readonly", false);
-                    $("#plateNumberLast").prop("readonly", false);
-                    $("#checkOut").prop("readonly", false);
-                    $("#save").prop("disabled", false);
-                    $("#cancel").prop("disabled", false);
-                    break;
-
-                default:
-                    $("#transportationId").prop("disabled", true);
-                    $("#plateNumberFirst").prop("readonly", true);
-                    $("#plateNumberMiddle").prop("readonly", true);
-                    $("#plateNumberLast").prop("readonly", true);
-                    $("#checkOut").prop("readonly", true);
-                    $("#save").prop("disabled", true);
-                    $("#cancel").prop("disabled", true);
-                    break;
-            }
-
-
-        }
 
         function GetCode() {
             $.ajax({
@@ -378,7 +408,82 @@
             });
         }
 
+
+
     });
+
+    function SetAttribute(oValue) {
+        switch (oValue) {
+            case 'enabled':
+                $("#transportationId").prop("disabled", false);
+                $("#plateNumberFirst").prop("readonly", false);
+                $("#plateNumberMiddle").prop("readonly", false);
+                $("#plateNumberLast").prop("readonly", false);
+                $("#checkOut").prop("readonly", false);
+                $("#save").prop("disabled", false);
+                $("#cancel").prop("disabled", false);
+                break;
+            default:
+                $("#hiddenId").val("");
+                $("#ticketCode").val("");
+                $("#plateNumberFirst").val("");
+                $("#plateNumberMiddle").val("");
+                $("#plateNumberLast").val("");
+                $("#checkIn").val("");
+                $("#checkOut").val("");
+                $("#duration").val("");
+                $("#amount").val("");
+
+                $("#transportationId").prop("disabled", true);
+                $("#plateNumberFirst").prop("readonly", true);
+                $("#plateNumberMiddle").prop("readonly", true);
+                $("#plateNumberLast").prop("readonly", true);
+                $("#checkOut").prop("readonly", true);
+                $("#save").prop("disabled", true);
+                $("#cancel").prop("disabled", true);
+                break;
+        }
+    }
+
+    function parseJsonDate(jsonDate) {
+        var dt = parseFloat(jsonDate.replace(/[^0-9]/g, ""));
+        var fullDate = new Date(dt);
+        let dateFormat = moment(fullDate).format("YYYY-MM-DD HH:mm:ss");
+        return dateFormat;
+    };
+
+    function Edit(_id) {
+        $.ajax({
+            url: '@Url.Action("Details", "Parking")',
+            data: { id: _id },
+            cache: false,
+            success: function (response) {
+                if (response.ResponseCode == "200") {
+                    SetAttribute('enabled');
+                    //bind data
+                    $("#hiddenID").val(response.ResponseData.Id);
+                    $("#ticketCode").val(response.ResponseData.TicketCode);
+                    $("#transportationId").val(response.ResponseData.TransportationId);
+                    $("#plateNumberFirst").val(response.ResponseData.PlateNumberFirst);
+                    $("#plateNumberMiddle").val(response.ResponseData.PlateNumberMiddle);
+                    $("#plateNumberLast").val(response.ResponseData.PlateNumberLast);
+                    if (response.ResponseData.CheckIn != null) {
+                        $("#checkIn").val(parseJsonDate(response.ResponseData.CheckIn));
+                    }
+                    if (response.ResponseData.CheckOut != null) {
+                        $("#checkOut").val(parseJsonDate(response.ResponseData.CheckOut));
+                    }
+                    $("#duration").val(response.ResponseData.Duration);
+                    $("#amount").val(response.ResponseData.Amount);
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                } else {
+                    alert(response.data.ResponseMessage);
+                }
+            }
+        });
+    }
 
 
 
