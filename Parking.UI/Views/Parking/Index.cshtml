@@ -370,36 +370,38 @@
                 var dataForm = $('#formTicket').serialize();
 
                 var id = $("#Id").val();
-                if (id == "") {
-                    $.ajax({
-                        url: '@Url.Action("Create", "Parking")',
-                        type: "POST",
-                        data: dataForm,
-                        success: function (response) {
-                            if (response.ResponseCode == "200") {
-                                $('#datatables').DataTable().ajax.reload();
-                                SetAttribute("disabled");
-                                alert("Data successfully save!");
-                            } else {
-                                alert(response.ResponseMessage);
-                            }
-                        }
-                    });
-                } else {
-                    $.ajax({
-                        url: '@Url.Action("Edit", "Parking")',
-                        type: "POST",
-                        data: dataForm,
-                        success: function (response) {
-                            if (response.ResponseCode == "200") {
-                                $('#datatables').DataTable().ajax.reload();
-                                SetAttribute("disabled");
-                                alert("Data successfully udpate!");
-                            }
-                        }
-                    });
-                }
+                if (confirm("Are you sure to save data?")) {
 
+                    if (id == "") {
+                        $.ajax({
+                            url: '@Url.Action("Create", "Parking")',
+                            type: "POST",
+                            data: dataForm,
+                            success: function (response) {
+                                if (response.ResponseCode == "200") {
+                                    $('#datatables').DataTable().ajax.reload();
+                                    SetAttribute("disabled");
+                                    alert("Data successfully save!");
+                                } else {
+                                    alert(response.ResponseMessage);
+                                }
+                            }
+                        });
+                    } else {
+                        $.ajax({
+                            url: '@Url.Action("Edit", "Parking")',
+                            type: "POST",
+                            data: dataForm,
+                            success: function (response) {
+                                if (response.ResponseCode == "200") {
+                                    $('#datatables').DataTable().ajax.reload();
+                                    SetAttribute("disabled");
+                                    alert("Data successfully udpate!");
+                                }
+                            }
+                        });
+                    }
+                }
             }
         });
 
@@ -407,6 +409,7 @@
             GetCode();
             SetAttribute('enabled');
             $("#checkIn").val(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             $("#plateNumberFirst").focus();
         });
 
@@ -515,8 +518,8 @@
                 alert('No data selected!');
             }
             else {
-
-                $('#datatables input[type="checkbox"]:checked').each(function () {
+                if (confirm("Are you sure to delete data?")) {
+                    $('#datatables input[type="checkbox"]:checked').each(function () {
                     var _id = ($(this).attr('value'));
 
                     $.ajax({
@@ -539,10 +542,12 @@
                     alert("Data successfully deleted!")
                     $('#datatables').DataTable().ajax.reload();
                 }
+                }
+
             }
 
-            
-            
+
+
         } catch (e) {
             alert(e);
         }
