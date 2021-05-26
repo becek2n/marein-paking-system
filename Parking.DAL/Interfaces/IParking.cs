@@ -1,5 +1,5 @@
 ﻿using Parking.DAL.DTO;
-using Parking.Repository.DTO;
+using Parking.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,7 @@ namespace Parking.Interfaces
         ResultModel<object> Edit(int id, ParkingDTO parkingDTO);
         ResultModel<object> Delete(int id);
         ResultModel<PagedResult<ParkingDTO>> GetAll(int pageIndex = 1, int pageSize = 10, string search = "");
+        ResultModel<ParkingDTO> GetId(int id);
         ResultModel<string> GetCode();
         ResultModel<List<ParkingDTO>> Report();
 

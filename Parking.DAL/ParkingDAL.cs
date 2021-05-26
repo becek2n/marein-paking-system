@@ -3,7 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Parking.DAL.DTO;
 using Parking.Helper;
 using Parking.Interfaces;
-using Parking.Repository.DTO;
+using Parking.DTO;
 using Parking.Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace Parking.DAL
     {
         private readonly ParkingContext _context;
         private readonly IMapper _mapper;
+        private readonly MapperConfiguration mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
 
         public ParkingDAL(ParkingContext context, IMapper mapper) {
             _context = context;
@@ -57,7 +58,38 @@ namespace Parking.DAL
 
         public ResultModel<object> Delete(int id)
         {
-            throw new NotImplementedException();
+            ResultModel<object> result = new ResultModel<object>();
+            try
+            {
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var data = _context.Parkings.Where(x => x.Id == id).FirstOrDefault();
+
+                        if (data == null) throw new Exception("Not found!");
+
+                        _context.Entry(data).State = System.Data.Entity.EntityState.Deleted;
+                        _context.SaveChanges();
+
+                        transaction.Commit();
+                        result.SetSuccess("success");
+                    }
+                    catch (Exception ex)
+                    {
+                        result.SetFailed(ex.Message);
+                        Logging.WriteErr(ex);
+                        transaction.Rollback();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.SetFailed(ex.Message);
+                Logging.WriteErr(ex);
+            }
+            return result;
         }
 
         public ResultModel<object> Edit(int id, ParkingDTO parkingDTO)
@@ -69,7 +101,7 @@ namespace Parking.DAL
                 {
                     try
                     {
-                        var data = _context.Transportations.Where(x => x.Id == id).FirstOrDefault();
+                        var data = _context.Parkings.Where(x => x.Id == id).FirstOrDefault();
                         
                         if (data == null) throw new Exception("Not found!");
 
@@ -103,8 +135,6 @@ namespace Parking.DAL
             ResultModel<PagedResult<ParkingDTO>> result = new ResultModel<PagedResult<ParkingDTO>>();
             try
             {
-                var mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
-
                 var data = _context.Parkings
                     .Where(x => x.Transportation.Name.ToLower().Contains(search))
                     .ProjectTo<ParkingDTO>(mapperConfig)
@@ -147,6 +177,27 @@ namespace Parking.DAL
                 Logging.WriteErr(ex);
             }
 
+            return result;
+        }
+
+        public ResultModel<ParkingDTO> GetId(int id)
+        {
+            ResultModel<ParkingDTO> result = new ResultModel<ParkingDTO>();
+            try
+            {
+
+                var data = _context.Parkings
+                    .Where(x => x.Id == id)
+                    .ProjectTo<ParkingDTO>(mapperConfig)
+                    .FirstOrDefault();
+
+                result.SetSuccess("success", data);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
             return result;
         }
 
