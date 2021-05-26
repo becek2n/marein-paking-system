@@ -33,7 +33,7 @@ namespace Parking.UI.Controllers
             var pageIndex = (param.Start / param.Length) + 1;
             var pageSize = param.Length;
 
-            string search = this.Request.QueryString["search[value]"] ?? string.Empty;
+            string search = Request["search[value]"];
 
             var data = _parking.GetAll(pageIndex, pageSize, search);
 
@@ -46,20 +46,11 @@ namespace Parking.UI.Controllers
                 } 
             };
 
-            //return Json(new
-            //{
-            //    param.Draw,
-            //    iTotalRecords = data.ResponseData.RowCount,
-            //    iTotalDisplayRecords = data.ResponseData.RowCount,
-            //    aaData = data.ResponseData.Results
-            //}, JsonRequestBehavior.AllowGet);
-
         }
         
         public ActionResult GetCode() {
             var data = _parking.GetCode();
 
-            //return Json(new { data }, JsonRequestBehavior.AllowGet);
             return new JsonNetResult() { Data = data };
 
         }
@@ -123,6 +114,7 @@ namespace Parking.UI.Controllers
 
     }
 
+    //convert primitive value 
     public class JsonNetResult : JsonResult
     {
         public object Data { get; set; }

@@ -159,7 +159,11 @@ namespace Parking.DAL
             try
             {
                 var data = _context.Parkings
-                    .Where(x => x.Transportation.Name.ToLower().Contains(search))
+                    .Where(x => x.Transportation.Name.ToLower().Contains(search) || 
+                        x.PlateNumberFirst.ToLower().Contains(search) ||
+                        x.PlateNumberMiddle.ToLower().Contains(search) ||
+                        x.PlateNumberLast.ToLower().Contains(search)
+                    )
                     .ProjectTo<ParkingDTO>(mapperConfig)
                     .GetPage(pageIndex, pageSize);
 
