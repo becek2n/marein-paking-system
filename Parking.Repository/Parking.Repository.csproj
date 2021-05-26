@@ -58,10 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DAL\ParkingDAL.cs" />
-    <Compile Include="DAL\ParkingInitializer.cs" />
-    <Compile Include="DTO\ParkingDTO.cs" />
-    <Compile Include="Interfaces\IParking.cs" />
+    <Compile Include="Seed\ParkingInitializer.cs" />
     <Compile Include="Models\Parking.cs" />
     <Compile Include="Models\ParkingContext.cs" />
     <Compile Include="Models\Transportation.cs" />

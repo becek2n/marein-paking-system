@@ -8,26 +8,27 @@ using System.Web;
 using System.Web.Mvc;
 using Parking.Repository.Models;
 using System.Linq.Dynamic;
-using Parking.UI.Extentions;
 using Parking.Interfaces;
+using Parking.DTO;
 
 namespace Parking.UI.Controllers
 {
     public class ParkingController : Controller
     {
-        private ParkingContext db = new ParkingContext();
-
         private readonly IParking _parking;
-        public ParkingController(IParking parking) {
+        private readonly ITransportation _transportation;
+        private readonly ParkingContext db = new ParkingContext();
+        public ParkingController(IParking parking, ITransportation transportation) {
             _parking = parking;
+            _transportation = transportation;
         }
         // GET: Parking
         public ActionResult Index() {
-            var transportations = db.Transportations.ToList();
+            var transportations = _transportation.GetAll().ResponseData;
             return View(transportations);
         }
 
-        public ActionResult GetAll(JqueryDatatableParam param)
+        public ActionResult GetAll(JqueryDatatableRequestDTO param)
         {
             var pageIndex = (param.Start / param.Length) + 1;
             var pageSize = param.Length;
@@ -40,7 +41,7 @@ namespace Parking.UI.Controllers
             {
                 param.Draw,
                 iTotalRecords = data.ResponseData.RowCount,
-                iTotalDisplayRecords = data.ResponseData.PageCount,
+                iTotalDisplayRecords = data.ResponseData.RowCount,
                 aaData = data.ResponseData.Results
             }, JsonRequestBehavior.AllowGet);
 
@@ -53,24 +54,16 @@ namespace Parking.UI.Controllers
         }
 
         // GET: Parking/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            ParkingArea parkingArea = db.Parkings.Find(id);
-            if (parkingArea == null)
+            var data = _parking.GetId(id);
+
+            if (data.ResponseData == null)
             {
                 return HttpNotFound();
             }
-            return View(parkingArea);
-        }
 
-        // GET: Parking/Create
-        public ActionResult Create()
-        {
-            return View();
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
 
         // POST: Parking/Create
@@ -78,31 +71,31 @@ namespace Parking.UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,TicketCode,TransportationTypeId,PlateNumber,CheckIn,CheckOut,Duration,Amount")] ParkingArea parkingArea)
+        public ActionResult Create(ParkingDTO parkingDTO)
         {
             if (ModelState.IsValid)
             {
-                db.Parkings.Add(parkingArea);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                var result = _parking.Add(parkingDTO);
+                //return RedirectToAction("Index");
             }
 
-            return View(parkingArea);
+            return Json(JsonRequestBehavior.AllowGet);
         }
 
         // GET: Parking/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
+            if (string.IsNullOrWhiteSpace(id.ToString()))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ParkingArea parkingArea = db.Parkings.Find(id);
-            if (parkingArea == null)
+            var data = _parking.GetId(id);
+
+            if (data.ResponseData == null)
             {
                 return HttpNotFound();
             }
-            return View(parkingArea);
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
 
         // POST: Parking/Edit/5
@@ -110,15 +103,17 @@ namespace Parking.UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,TicketCode,TransportationTypeId,PlateNumber,CheckIn,CheckOut,Duration,Amount")] ParkingArea parkingArea)
+        public ActionResult Edit(int id, ParkingDTO parkingDTO)
         {
+            if (string.IsNullOrWhiteSpace(id.ToString())) { 
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             if (ModelState.IsValid)
             {
-                db.Entry(parkingArea).State = EntityState.Modified;
-                db.SaveChanges();
+                var result = _parking.Edit(id, parkingDTO);
                 return RedirectToAction("Index");
             }
-            return View(parkingArea);
+            return View();
         }
 
         // GET: Parking/Delete/5
@@ -141,10 +136,11 @@ namespace Parking.UI.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            ParkingArea parkingArea = db.Parkings.Find(id);
-            db.Parkings.Remove(parkingArea);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            if (string.IsNullOrWhiteSpace(id.ToString())) { 
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var result = _parking.Delete(id);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
@@ -158,62 +154,4 @@ namespace Parking.UI.Controllers
     }
 
     
-}
-
-namespace Parking.UI.Extentions {
-    public class JqueryDatatableParam
-    {
-        public string Echo { get; set; }
-        public int Length { get; set; }
-        public int Start { get; set; }
-        public int Columns { get; set; }
-        public int Draw { get; set; }
-    }
-    public abstract class PagedResultBase
-    {
-        public int CurrentPage { get; set; }
-        public int PageCount { get; set; }
-        public int PageSize { get; set; }
-        public int RowCount { get; set; }
-
-        public int FirstRowOnPage
-        {
-
-            get { return (CurrentPage - 1) * PageSize + 1; }
-        }
-
-        public int LastRowOnPage
-        {
-            get { return Math.Min(CurrentPage * PageSize, RowCount); }
-        }
-    }
-
-    public class PagedResult<T> : PagedResultBase where T : class
-    {
-        public IList<T> Results { get; set; }
-
-        public PagedResult()
-        {
-            Results = new List<T>();
-        }
-    }
-    public static class GetPaged
-    {
-        public static PagedResult<T> GetPage<T>(this IQueryable<T> query, int page, int pageSize) where T : class
-        {
-            var result = new PagedResult<T>();
-            result.CurrentPage = page;
-            result.PageSize = pageSize;
-            result.RowCount = query.Count();
-
-
-            var pageCount = (double)result.RowCount / pageSize;
-            result.PageCount = (int)Math.Ceiling(pageCount);
-
-            var skip = (page - 1) * pageSize;
-            result.Results = query.OrderBy("Id").Skip(skip).Take(pageSize).ToList();
-
-            return result;
-        }
-    }
 }

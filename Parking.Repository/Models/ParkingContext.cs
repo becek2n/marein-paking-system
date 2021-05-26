@@ -1,4 +1,4 @@
-﻿using Parking.Repository.DAL;
+﻿using Parking.Repository.Seed;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
