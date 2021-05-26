@@ -19,6 +19,7 @@ namespace Parking.UI
             // e.g. container.RegisterType<ITestService, TestService>();
 
             container.RegisterType<IParking, ParkingDAL>();
+            container.RegisterType<ITransportation, TransportationDAL>();
             //automammper
             var mapperConfig = new MapperConfiguration(mc =>
             {
