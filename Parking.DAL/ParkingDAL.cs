@@ -30,7 +30,7 @@ namespace Parking.DAL
             ResultModel<object> result = new ResultModel<object>();
             try
             {
-                //validate
+                //validate dates
                 if (parkingDTO.CheckOut != null) {
                     if (parkingDTO.CheckOut < parkingDTO.CheckIn) {
                         throw new Exception("Check Out not less than Check In!");
@@ -120,6 +120,16 @@ namespace Parking.DAL
             ResultModel<object> result = new ResultModel<object>();
             try
             {
+                //validate dates
+                if (parkingDTO.CheckOut != null)
+                {
+                    if (parkingDTO.CheckOut < parkingDTO.CheckIn)
+                    {
+                        throw new Exception("Check Out not less than Check In!");
+                    }
+                }
+
+
                 using (var transaction = _context.Database.BeginTransaction())
                 {
                     try
