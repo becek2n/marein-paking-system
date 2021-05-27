@@ -11,6 +11,7 @@ using System.Linq.Dynamic;
 using Parking.Interfaces;
 using Parking.DTO;
 using Newtonsoft.Json;
+using Rotativa;
 
 namespace Parking.UI.Controllers
 {
@@ -110,6 +111,15 @@ namespace Parking.UI.Controllers
             }
             var result = _parking.Delete(id);
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Print() {
+            var data = _parking.Report().ResponseData;
+
+            return new PartialViewAsPdf("_Report", data)
+            {
+                FileName = "TestPartialViewAsPdf.pdf"
+            };
         }
 
     }

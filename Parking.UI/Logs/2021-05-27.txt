@@ -1,0 +1,48 @@
+27-05-2021 00:07:41 [E] Validation failed for one or more entities. See 'EntityValidationErrors' property for more details.
+27-05-2021 00:07:41 [E] 
+27-05-2021 00:07:41 [E]    at System.Data.Entity.Internal.InternalContext.SaveChanges()
+   at System.Data.Entity.Internal.LazyInternalContext.SaveChanges()
+   at System.Data.Entity.DbContext.SaveChanges()
+   at Parking.DAL.ParkingDAL.Add(ParkingRequestDTO parkingDTO) in D:\Source Code\project\Marein-Parking\Parking.DAL\ParkingDAL.cs:line 44
+
+==========================================================================================================
+
+27-05-2021 00:08:34 [E] Validation failed for one or more entities. See 'EntityValidationErrors' property for more details.
+27-05-2021 00:08:34 [E] 
+27-05-2021 00:08:34 [E]    at System.Data.Entity.Internal.InternalContext.SaveChanges()
+   at System.Data.Entity.Internal.LazyInternalContext.SaveChanges()
+   at System.Data.Entity.DbContext.SaveChanges()
+   at Parking.DAL.ParkingDAL.Add(ParkingRequestDTO parkingDTO) in D:\Source Code\project\Marein-Parking\Parking.DAL\ParkingDAL.cs:line 44
+
+==========================================================================================================
+
+27-05-2021 00:17:01 [E] Check Out is not less than Check In!
+27-05-2021 00:17:01 [E] 
+27-05-2021 00:17:01 [E]    at Parking.DAL.ParkingDAL.Add(ParkingRequestDTO parkingDTO) in D:\Source Code\project\Marein-Parking\Parking.DAL\ParkingDAL.cs:line 36
+
+==========================================================================================================
+
+27-05-2021 00:17:06 [E] Check Out is not less than Check In!
+27-05-2021 00:17:06 [E] 
+27-05-2021 00:17:06 [E]    at Parking.DAL.ParkingDAL.Add(ParkingRequestDTO parkingDTO) in D:\Source Code\project\Marein-Parking\Parking.DAL\ParkingDAL.cs:line 36
+
+==========================================================================================================
+
+27-05-2021 00:17:13 [E] Check Out is not less than Check In!
+27-05-2021 00:17:13 [E] 
+27-05-2021 00:17:13 [E]    at Parking.DAL.ParkingDAL.Add(ParkingRequestDTO parkingDTO) in D:\Source Code\project\Marein-Parking\Parking.DAL\ParkingDAL.cs:line 36
+
+==========================================================================================================
+
+27-05-2021 00:17:22 [E] Check Out is not less than Check In!
+27-05-2021 00:17:22 [E] 
+27-05-2021 00:17:22 [E]    at Parking.DAL.ParkingDAL.Add(ParkingRequestDTO parkingDTO) in D:\Source Code\project\Marein-Parking\Parking.DAL\ParkingDAL.cs:line 36
+
+==========================================================================================================
+
+27-05-2021 00:20:28 [E] Check Out not less than Check In!
+27-05-2021 00:20:28 [E] 
+27-05-2021 00:20:28 [E]    at Parking.DAL.ParkingDAL.Add(ParkingRequestDTO parkingDTO) in D:\Source Code\project\Marein-Parking\Parking.DAL\ParkingDAL.cs:line 36
+
+==========================================================================================================
+

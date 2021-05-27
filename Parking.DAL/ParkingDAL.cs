@@ -230,7 +230,21 @@ namespace Parking.DAL
 
         public ResultModel<List<ParkingDTO>> Report()
         {
-            throw new NotImplementedException();
+            ResultModel<List<ParkingDTO>> result = new ResultModel<List<ParkingDTO>>();
+            try
+            {
+                var data = _context.Parkings
+                    .ProjectTo<ParkingDTO>(mapperConfig)
+                    .ToList();
+
+                result.SetSuccess("success", data);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return result;
         }
     }
 }
