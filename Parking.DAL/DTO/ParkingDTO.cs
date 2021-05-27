@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,8 @@ namespace Parking.DTO
         public string PlateNumberLast { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime? CheckOut { get; set; }
-        public TimeSpan? Duration { get; set; }
+        public Int64 DurationTick { get; set; }
+        public string Duration { get; set; }
         public double Amount { get; set; }
         public TransportationDTO Transportation { get; set; }
     }
@@ -31,7 +33,8 @@ namespace Parking.DTO
         public string PlateNumberLast { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime? CheckOut { get; set; }
-        public TimeSpan? Duration { get; set; }
+        public long DurationTick { get; set; }
+        public string Duration { get; set; }
         public double Amount { get; set; }
     }
 

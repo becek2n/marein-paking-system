@@ -12,6 +12,7 @@ using Parking.Interfaces;
 using Parking.DTO;
 using Newtonsoft.Json;
 using Rotativa;
+using NodaTime;
 
 namespace Parking.UI.Controllers
 {
@@ -141,7 +142,7 @@ namespace Parking.UI.Controllers
             if (Data != null)
             {
                 JsonTextWriter writer = new JsonTextWriter(response.Output) { Formatting = Formatting.Indented };
-                JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings());
+                JsonSerializer serializer = JsonSerializer.Create();
                 serializer.Serialize(writer, Data);
                 writer.Flush();
             }

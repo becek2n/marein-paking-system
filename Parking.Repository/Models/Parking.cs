@@ -24,7 +24,8 @@ namespace Parking.Repository.Models
         [Required]
         public DateTime CheckIn { get; set; }
         public DateTime? CheckOut { get; set; }
-        public TimeSpan? Duration { get; set; }
+        public Int64 DurationTick { get; set; }
+        public String Duration { get; set; }
         public double Amount { get; set; }
 
         public virtual Transportation Transportation { get; set; }

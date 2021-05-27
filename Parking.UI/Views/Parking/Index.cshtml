@@ -195,7 +195,7 @@
         "Invalid date"
     );
 
-    function Calculate(end) {
+    function Calculate() {
         try {
             var endDateValue = $("#checkOut").val();
 
@@ -230,7 +230,7 @@
     $(document).ready(function () {
 
         $("#transportationId").change(function () {
-            Calculate('');
+            Calculate();
         })
         $('#checkIn').datetimepicker({
             format: 'YYYY-MM-DD HH:mm:ss'
@@ -241,7 +241,7 @@
 
         }).on('dp.change', function (event) {
             if (event.date) {
-                Calculate(event);
+                Calculate();
             } else {
                 $("#duration").val("");
                 $("#amount").val("");
@@ -311,7 +311,11 @@
                     data: 'Duration',
                     render: function (data, type, row, meta) {
                         if (row.Duration == null) { return '-'; }
-                        return row.Duration;
+                        if (Date.parse(row.CheckOut)) {
+                            return secondsToHMS((new Date(row.CheckOut) - new Date(row.CheckIn)) / 1000).substr(0,8);
+                        } else {
+                            return '-';
+                        }
                     },
                     "orderable": false
                 },
@@ -368,7 +372,12 @@
             },
             submitHandler: function (form) {
                 var dataForm = $('#formTicket').serialize();
-
+                var secs = 0;
+                if (Date.parse($("#checkOut").val())) {
+                    secs = Math.abs((new Date($("#checkOut").val())) - (new Date($("#checkIn").val()))) / 1000;
+                    dataForm += "&DurationTick=" + secs;
+                    console.log(secs);
+                }
                 var id = $("#Id").val();
                 if (confirm("Are you sure to save data?")) {
 
@@ -397,6 +406,8 @@
                                     $('#datatables').DataTable().ajax.reload();
                                     SetAttribute("disabled");
                                     alert("Data successfully udpate!");
+                                } else {
+                                    alert(response.ResponseMessage);
                                 }
                             }
                         });
@@ -494,7 +505,7 @@
                         }
                         $("#duration").val(response.ResponseData.Duration);
                         $("#amount").val(response.ResponseData.Amount);
-
+                        Calculate();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
 
                     } else {
@@ -559,6 +570,5 @@
         secs = Math.abs(secs);
         return sign + z(secs / 3600 | 0) + ':' + z((secs % 3600) / 60 | 0) + ':' + z(secs % 60);
     }
-
 
 </script>
