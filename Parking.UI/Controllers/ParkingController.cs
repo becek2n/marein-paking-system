@@ -118,7 +118,7 @@ namespace Parking.UI.Controllers
 
             return new PartialViewAsPdf("_Report", data)
             {
-                FileName = "TestPartialViewAsPdf.pdf"
+                FileName = "Parking Report.pdf"
             };
         }
 
